@@ -19,7 +19,6 @@ const AdminDashboard = () => {
 
   // Fetch Images
   const fetchImages = async (initial = false) => {
-
     try {
 
       if (initial) {
@@ -29,16 +28,13 @@ const AdminDashboard = () => {
       }
 
       const res = await axiosInstance.get("/admin/images");
-
       setImages(res.data.data);
 
     } catch (error) {
       console.log(error.response?.data || error.message);
     } finally {
-
       setPageLoading(false);
       setImagesLoading(false);
-
     }
   };
 
@@ -113,7 +109,6 @@ const AdminDashboard = () => {
       setImagesLoading(true);
 
       const formData = new FormData();
-
       formData.append("title", editTitle);
 
       if (editImage) {
@@ -140,9 +135,7 @@ const AdminDashboard = () => {
   if (pageLoading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <p className="text-slate-900 text-lg">
-          Loading...
-        </p>
+        <p className="text-slate-900 text-lg">Loading...</p>
       </div>
     );
   }
@@ -151,26 +144,26 @@ const AdminDashboard = () => {
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8 w-full">
 
       {/* Upload Section */}
 
-      <div className="border border-gray-300 rounded-2xl  pt-6 max-w-2xl mx-auto">
+      <div className="border border-gray-300 rounded-2xl pt-6 max-w-2xl mx-auto px-4">
 
-        <h2 className="text-3xl font-bold text-center mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">
           Welcome Admin Dashboard
         </h2>
 
-        <hr className="w-xl mx-auto mb-5" />
+        <hr className="w-full mb-5" />
 
-        <h3 className="text-3xl font-bold text-center mb-8 text-slate-600">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 text-slate-600">
           Upload Images
         </h3>
 
 
         <form
           onSubmit={handleUpload}
-          className="bg-white p-6 rounded-2xl shadow-md max-w-md mx-auto mb-10 space-y-4"
+          className="bg-white p-4 sm:p-6 rounded-2xl shadow-md max-w-md mx-auto mb-10 space-y-4"
         >
 
           <input
@@ -193,8 +186,7 @@ const AdminDashboard = () => {
             className={`w-full py-2 rounded-xl text-white transition
             ${uploading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"}
-          `}
+                : "bg-blue-600 hover:bg-blue-700"}`}
           >
 
             {uploading ? "Uploading..." : "Upload Image"}
@@ -209,7 +201,7 @@ const AdminDashboard = () => {
 
       {/* Images Section */}
 
-      <h3 className="text-3xl font-bold text-center mb-8 text-slate-600 p-4">
+      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mt-4 mb-4 text-slate-600">
         All Images
       </h3>
 
@@ -224,7 +216,7 @@ const AdminDashboard = () => {
 
       ) : (
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 px-1 sm:px-4">
 
           {images.map((img) => (
 
@@ -236,10 +228,10 @@ const AdminDashboard = () => {
               <img
                 src={img.imageUrl}
                 alt={img.title}
-                className="w-full h-48 object-cover"
+                className="w-full h-36 sm:h-44 md:h-48 object-cover"
               />
 
-              <div className="p-4 space-y-3">
+              <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
 
                 {editId === img._id ? (
 
@@ -281,14 +273,14 @@ const AdminDashboard = () => {
 
                   <>
 
-                    <h3 className="text-lg font-semibold text-gray-800">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
                       {img.title}
                     </h3>
 
 
                     <div className="flex items-center justify-between">
 
-                      <span className="text-base text-gray-600 flex gap-2">
+                      <span className="text-sm sm:text-base text-gray-600 flex gap-2 items-center">
 
                         {img.likesCount > 0
                           ? <Heart className="text-red-500 fill-red-500 scale-110" />
@@ -299,21 +291,21 @@ const AdminDashboard = () => {
                       </span>
 
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
 
                         <button
                           onClick={() => {
                             setEditId(img._id);
                             setEditTitle(img.title);
                           }}
-                          className="text-gray-200 w-16 hover:bg-gray-600 text-sm bg-gray-400 p-2 rounded-2xl"
+                          className="text-gray-200 w-full sm:w-16 hover:bg-gray-600 text-xs sm:text-sm bg-gray-400 p-2 rounded-xl"
                         >
                           Edit
                         </button>
 
                         <button
                           onClick={() => handleDelete(img._id)}
-                          className="text-gray-200 w-16 hover:bg-red-600 text-sm bg-red-400 p-2 rounded-2xl"
+                          className="text-gray-200 w-full sm:w-16 hover:bg-red-600 text-xs sm:text-sm bg-red-400 p-2 rounded-xl"
                         >
                           Delete
                         </button>
