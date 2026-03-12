@@ -155,7 +155,7 @@ const AdminDashboard = () => {
 
       {/* Upload Section */}
 
-      <div className="border border-gray-300 p-4 max-w-2xl mx-auto">
+      <div className="border border-gray-300 rounded-2xl  pt-6 max-w-2xl mx-auto">
 
         <h2 className="text-3xl font-bold text-center mb-8">
           Welcome Admin Dashboard
