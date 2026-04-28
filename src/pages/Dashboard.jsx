@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
 import axiosInstance from "../utils/axios";
+import StatsCards from "../components/dashboard/StatsCards";
+import UploadForm from "../components/dashboard/UploadForm";
+import ImageGrid from "../components/dashboard/ImageGrid";
+import AdminLayout from "../components/layout/AdminLayout";
 
 const AdminDashboard = () => {
-
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [images, setImages] = useState([]);
-
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editImage, setEditImage] = useState(null);
@@ -15,21 +16,23 @@ const AdminDashboard = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [tags, setTags] = useState([]);
 
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalImages: 0,
+    totalLikes: 0,
+    mostLiked: null,
+  });
 
   // Fetch Images
   const fetchImages = async (initial = false) => {
     try {
-
-      if (initial) {
-        setPageLoading(true);
-      } else {
-        setImagesLoading(true);
-      }
+      if (initial) setPageLoading(true);
+      else setImagesLoading(true);
 
       const res = await axiosInstance.get("/admin/images");
       setImages(res.data.data);
-
     } catch (error) {
       console.log(error.response?.data || error.message);
     } finally {
@@ -38,74 +41,53 @@ const AdminDashboard = () => {
     }
   };
 
-
   useEffect(() => {
     fetchImages(true);
   }, []);
 
+  // ✅ FIXED UPLOAD FUNCTION
+  // ✅ FINAL FIXED handleUpload
+const handleUpload = async ({ title, image, tag }) => {
+  try {
+    setUploading(true);
 
+    const formData = new FormData();
+    formData.append("title", title.trim());
+    formData.append("image", image);
+    formData.append("tags", tag);
+    await axiosInstance.post("/admin/upload-image", formData);
+    alert("Image Uploaded Successfully!");
 
-  // Upload Image
-  const handleUpload = async (e) => {
+    setTitle("");
+    setImage(null);
+    setTags([]);
 
-    e.preventDefault();
+    fetchImages();
 
-    if (!title || !image) {
-      alert("Title and Image required");
-      return;
-    }
+  } catch (error) {
+    console.error(error);
+    alert("Upload failed");
+  } finally {
+    setUploading(false);
+  }
+};
 
-    try {
-
-      setUploading(true);
-
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("image", image);
-
-      await axiosInstance.post("/admin/upload-image", formData);
-
-      alert("Image Uploaded");
-
-      setTitle("");
-      setImage(null);
-
-      fetchImages();
-
-    } catch (error) {
-      console.log(error.response?.data || error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-
-
-  // Delete Image
+  // Delete
   const handleDelete = async (id) => {
-
     if (!window.confirm("Are you sure?")) return;
 
     try {
-
       setImagesLoading(true);
-
       await axiosInstance.delete(`/admin/image/${id}`);
-
       fetchImages();
-
     } catch (error) {
       console.log(error.response?.data || error.message);
     }
   };
 
-
-
-  // Update Image
+  // Update
   const handleUpdate = async (id) => {
-
     try {
-
       setImagesLoading(true);
 
       const formData = new FormData();
@@ -123,215 +105,62 @@ const AdminDashboard = () => {
       setEditImage(null);
 
       fetchImages();
-
     } catch (error) {
       console.log(error.response?.data || error.message);
     }
   };
 
-
-
-  // Page Loading
   if (pageLoading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <p className="text-slate-900 text-lg">Loading...</p>
+        Loading...
       </div>
     );
   }
 
-
-
   return (
+    <AdminLayout>
+      <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
 
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8 w-full">
+        <StatsCards stats={stats} />
 
-      {/* Upload Section */}
+        <div className="flex flex-col lg:flex-row gap-6">
 
-      <div className="border border-gray-300 rounded-2xl pt-6 max-w-2xl mx-auto px-4">
+          {/* Upload */}
+          <div className="lg:w-1/3">
+            <UploadForm
+              title={title}
+              setTitle={setTitle}
+              image={image}
+              setImage={setImage}
+              handleUpload={handleUpload}
+              tags={tags}
+              setTags={setTags}
+              uploading={uploading}
+            />
+          </div>
 
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">
-          Welcome Admin Dashboard
-        </h2>
+          {/* Images */}
+          <div className="lg:w-2/3">
+            <h3 className="text-2xl font-bold mb-4">All Images</h3>
 
-        <hr className="w-full mb-5" />
+            <ImageGrid
+              images={images}
+              imagesLoading={imagesLoading}
+              handleDelete={handleDelete}
+              editId={editId}
+              editTitle={editTitle}
+              setEditId={setEditId}
+              setEditTitle={setEditTitle}
+              handleUpdate={handleUpdate}
+              setEditImage={setEditImage}
+            />
+          </div>
 
-        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 text-slate-600">
-          Upload Images
-        </h3>
-
-
-        <form
-          onSubmit={handleUpload}
-          className="bg-white p-4 sm:p-6 rounded-2xl shadow-md max-w-md mx-auto mb-10 space-y-4"
-        >
-
-          <input
-            type="text"
-            placeholder="Enter Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-          />
-
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="w-full cursor-pointer"
-          />
-
-          <button
-            type="submit"
-            disabled={uploading}
-            className={`w-full py-2 rounded-xl text-white transition
-            ${uploading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"}`}
-          >
-
-            {uploading ? "Uploading..." : "Upload Image"}
-
-          </button>
-
-        </form>
-
+        </div>
       </div>
-
-
-
-      {/* Images Section */}
-
-      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mt-4 mb-4 text-slate-600">
-        All Images
-      </h3>
-
-
-      {imagesLoading ? (
-
-        <div className="flex justify-center items-center py-10">
-          <p className="text-lg text-gray-600">
-            Loading images...
-          </p>
-        </div>
-
-      ) : (
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 px-1 sm:px-4">
-
-          {images.map((img) => (
-
-            <div
-              key={img._id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
-            >
-
-              <img
-                src={img.imageUrl}
-                alt={img.title}
-                className="w-full h-36 sm:h-44 md:h-48 object-cover"
-              />
-
-              <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-
-                {editId === img._id ? (
-
-                  <>
-
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className="w-full border p-2 rounded-lg"
-                    />
-
-                    <input
-                      type="file"
-                      onChange={(e) => setEditImage(e.target.files[0])}
-                    />
-
-                    <div className="flex gap-2">
-
-                      <button
-                        onClick={() => handleUpdate(img._id)}
-                        className="flex-1 bg-green-600 text-white py-1 rounded-lg"
-                      >
-                        Save
-                      </button>
-
-                      <button
-                        onClick={() => setEditId(null)}
-                        className="flex-1 bg-gray-400 text-white py-1 rounded-lg"
-                      >
-                        Cancel
-                      </button>
-
-                    </div>
-
-                  </>
-
-                ) : (
-
-                  <>
-
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
-                      {img.title}
-                    </h3>
-
-
-                    <div className="flex items-center justify-between">
-
-                      <span className="text-sm sm:text-base text-gray-600 flex gap-2 items-center">
-
-                        {img.likesCount > 0
-                          ? <Heart className="text-red-500 fill-red-500 scale-110" />
-                          : <Heart />}
-
-                        {img.likesCount || 0}
-
-                      </span>
-
-
-                      <div className="flex gap-2 flex-wrap">
-
-                        <button
-                          onClick={() => {
-                            setEditId(img._id);
-                            setEditTitle(img.title);
-                          }}
-                          className="text-gray-200 w-full sm:w-16 hover:bg-gray-600 text-xs sm:text-sm bg-gray-400 p-2 rounded-xl"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(img._id)}
-                          className="text-gray-200 w-full sm:w-16 hover:bg-red-600 text-xs sm:text-sm bg-red-400 p-2 rounded-xl"
-                        >
-                          Delete
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  </>
-
-                )}
-
-              </div>
-
-            </div>
-
-          ))}
-
-        </div>
-
-      )}
-
-    </div>
-
+    </AdminLayout>
   );
-
 };
 
 export default AdminDashboard;
