@@ -13,7 +13,6 @@ const AdminDashboard = () => {
   const [editTitle, setEditTitle] = useState("");
   const [editImage, setEditImage] = useState(null);
   const [editTag, setEditTag] = useState("");
-
   const [pageLoading, setPageLoading] = useState(true);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -41,9 +40,17 @@ const AdminDashboard = () => {
       setImagesLoading(false);
     }
   };
-
+const fetchStats = async () => {
+  try {
+    const res = await axiosInstance.get("/admin/stats");
+    setStats(res.data.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
   useEffect(() => {
     fetchImages(true);
+    fetchStats();
   }, []);
 
   // ✅ FIXED UPLOAD FUNCTION
@@ -145,7 +152,6 @@ const handleUpload = async ({ title, image, tag }) => {
           {/* Images */}
           <div className="lg:w-2/3">
             <h3 className="text-2xl font-bold mb-4">All Images</h3>
-
             <ImageGrid
               images={images}
               imagesLoading={imagesLoading}
@@ -160,7 +166,6 @@ const handleUpload = async ({ title, image, tag }) => {
               setEditImage={setEditImage}
             />
           </div>
-
         </div>
       </div>
     </AdminLayout>
