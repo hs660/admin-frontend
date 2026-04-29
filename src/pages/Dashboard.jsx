@@ -12,11 +12,12 @@ const AdminDashboard = () => {
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editImage, setEditImage] = useState(null);
+  const [editTag, setEditTag] = useState("");
 
   const [pageLoading, setPageLoading] = useState(true);
   const [imagesLoading, setImagesLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState("");
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -87,28 +88,29 @@ const handleUpload = async ({ title, image, tag }) => {
 
   // Update
   const handleUpdate = async (id) => {
-    try {
-      setImagesLoading(true);
+  try {
+    setImagesLoading(true);
 
-      const formData = new FormData();
-      formData.append("title", editTitle);
+    const formData = new FormData();
+    formData.append("title", editTitle);
+    formData.append("tags", editTag);   // ✅ ADD THIS
 
-      if (editImage) {
-        formData.append("image", editImage);
-      }
-
-      await axiosInstance.put(`/admin/image/${id}`, formData);
-
-      alert("Updated Successfully");
-
-      setEditId(null);
-      setEditImage(null);
-
-      fetchImages();
-    } catch (error) {
-      console.log(error.response?.data || error.message);
+    if (editImage) {
+      formData.append("image", editImage);
     }
-  };
+
+    await axiosInstance.put(`/admin/image/${id}`, formData);
+
+    alert("Updated Successfully");
+
+    setEditId(null);
+    setEditImage(null);
+
+    fetchImages();
+  } catch (error) {
+    console.log(error.response?.data || error.message);
+  }
+};
 
   if (pageLoading) {
     return (

@@ -10,6 +10,8 @@ const ImageGrid = ({
   editTitle,
   setEditId,
   setEditTitle,
+  editTag,
+  setEditTag,
   handleUpdate,
   setEditImage,
 }) => {
@@ -75,7 +77,13 @@ const ImageGrid = ({
                     onChange={(e) => setEditTitle(e.target.value)}
                     className="w-full border p-2 rounded-lg"
                   />
-
+<input
+  type="text"
+  value={editTag}
+  onChange={(e) => setEditTag(e.target.value)}
+  className="w-full border p-2 rounded-lg"
+  placeholder="Edit tag"
+/>
                   <input
                     type="file"
                     onChange={(e) => setEditImage(e.target.files[0])}
