@@ -152,8 +152,10 @@ const handleUpload = async ({ title, image, tag }) => {
               handleDelete={handleDelete}
               editId={editId}
               editTitle={editTitle}
+              editTag={editTag}
               setEditId={setEditId}
               setEditTitle={setEditTitle}
+              setEditTag={setEditTag}
               handleUpdate={handleUpdate}
               setEditImage={setEditImage}
             />

@@ -137,6 +137,7 @@ const ImageGrid = ({
                         onClick={() => {
                           setEditId(img._id);
                           setEditTitle(img.title);
+                          setEditTag(img.tags)
                         }}
                         className="text-xs px-3 py-1 bg-blue-100 text-blue-600 rounded"
                       >
