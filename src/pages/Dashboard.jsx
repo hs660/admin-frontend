@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   };
 const fetchStats = async () => {
   try {
-    const res = await axiosInstance.get("/admin/stats");
+    const res = await axiosInstance.get("/stats");
     setStats(res.data.data);
   } catch (error) {
     console.log(error);
