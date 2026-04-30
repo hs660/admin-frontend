@@ -5,12 +5,6 @@ const StatsCards = ({ stats }) => {
 
   const cards = [
     {
-      title: "Total Users",
-      value: stats.totalUsers,
-      icon: <Users />,
-      gradient: "from-blue-500 to-blue-700",
-    },
-    {
       title: "Total Images",
       value: stats.totalImages,
       icon: <Image />,
@@ -66,7 +60,6 @@ const StatsCards = ({ stats }) => {
             <h2 className="text-xl md:text-2xl font-bold truncate">
               {card.value}
             </h2>
-
           </div>
 
         </div>
